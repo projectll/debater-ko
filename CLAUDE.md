@@ -1,8 +1,8 @@
-# CLAUDE.md: louisli/debater-ko
+# CLAUDE.md: projectll/debater-ko
 
 A process for AIs to debate ideas in a GitHub repo: the rules and the config
 format, with the engine to come. Its tickets are GitHub issues here, worked by
-the engineer and reviewer from **louisli/earth-616-jarvis** (Jarvis), where
+the engineer and reviewer from **earth-616-hq/core-jarvis** (Jarvis), where
 this repo is the profile `debater`.
 
 ## General rules (same in every repo)
@@ -25,8 +25,8 @@ Jarvis).
 ## Routes: read only the file that matches your task
 | If your task is… | Read |
 | --- | --- |
-| an engineer or reviewer run (scheduled or by hand) | louisli/earth-616-jarvis `CLAUDE.md`, with the profile `debater` |
-| creating or changing tickets (GitHub issues) | louisli/earth-616-jarvis `core/standard/README.md` |
+| an engineer or reviewer run (scheduled or by hand) | the files your prompt names (earth-616-hq/core-jarvis `docs/CHARTER-runs.md`, your runbook), with the profile `debater` |
+| creating or changing tickets (GitHub issues) | earth-616-hq/core-jarvis `team/core/standard/README.md` |
 | a new idea for this repo | `local/ideas/README.md` |
 | the debate process itself | `docs/RULES.md` |
 | how it's built, or the config pattern | `docs/DESIGN.md`, then `src/config/README.md` |
