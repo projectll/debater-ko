@@ -3,3 +3,6 @@
 // scripts/check-format-deps.mjs enforces that. Later format tickets add the records and functions here.
 
 export const FORMAT_MODULE = "format";
+
+export { TURN_KINDS, validateTurns } from "./turn.ts";
+export type { TurnKind, TurnRecord } from "./turn.ts";
