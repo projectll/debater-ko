@@ -14,3 +14,12 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
 
 `node scripts/check-format-deps.mjs` checks this and fails on any such import;
 `node --test "tests/format/*.test.mjs"` tests the check.
+
+## Records
+
+- **Turn** (`turn.ts`): `turn_id`, `seq`, `side`, `speaker`, `kind` (`opening`, `rebuttal` or
+  `closing`) and `text`. `validateTurns(turns)` returns one error string per problem, naming the
+  turn's 0-based index and the field or the sequence gap. Extra fields aren't an error, so later
+  tickets can add theirs.
+
+`node --experimental-strip-types --test "tests/format/*.test.ts"` tests the records.
