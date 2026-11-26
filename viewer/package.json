@@ -1,0 +1,22 @@
+{
+  "name": "debater-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The debate viewer: reads transcripts through the format layer only (deb-015a).",
+  "scripts": {
+    "dev": "next dev --hostname localhost",
+    "build": "next build",
+    "start": "next start --hostname localhost",
+    "check-deps": "node scripts/check-deps.mjs"
+  },
+  "dependencies": {
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.7",
+    "@types/react": "^19.3.3",
+    "typescript": "^5"
+  }
+}
