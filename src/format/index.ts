@@ -4,5 +4,7 @@
 
 export const FORMAT_MODULE = "format";
 
+export { DEFAULT_REBUTTAL_ROUNDS, validateDebateConfig } from "./config.ts";
+export type { ConfigError, DebateConfig, DebateSide } from "./config.ts";
 export { TURN_KINDS, validateTurns } from "./turn.ts";
 export type { TurnKind, TurnRecord } from "./turn.ts";
