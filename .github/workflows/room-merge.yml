@@ -12,7 +12,11 @@ name: room-merge
 #      (team/addons/discussion/box/: SWAT Command merges those and posts the install paste);
 #   5. the principal reviewer's latest verdict is PASS, without `security`, and on the head commit;
 #   6. CI on the head is green: at least one check run, every check run done as success, neutral or skipped (this
-#      workflow's own and would-auto-merge aside), and no failing or pending commit status.
+#      workflow's own and would-auto-merge aside), and no failing or pending commit status;
+#   7. the merge order holds (core-jarvis#1274; Lou via the VCC, 2026-11-25): a PR whose body has a `Merge after: #n`
+#      line (or `owner/repo#n`; several refs, comma or space separated) isn't merged while a PR it names is still open.
+#      JJ writes the line when the VCC gives an order. The same rule as core-jarvis's copy (core-jarvis#1278) and SWAT's
+#      check (`jarvis bravo merge-after`, core-jarvis src/runner/mergeAfter.ts).
 # It never checks out the PR's code: everything is read through the API, so pull_request_target stays safe.
 # Its token is a personal one, not GITHUB_TOKEN: a merge by GITHUB_TOKEN starts no workflow, and main's CI must run.
 #
@@ -71,6 +75,16 @@ jobs:
               | select((.user.login // "") as $u | $who | index([$u]) != null)]
               | last | if . == null then "none" else "\(.commit_id)\t\(.body | split("\n")[0])" end'
           }
+          merge_after() {  # PR body $1: empty when every PR its `Merge after:` lines name is closed (or there's none), else why not
+            local refs ref r n st
+            refs=$(grep -iE '^[[:space:]]*Merge after:' <<< "$1" | sed -E 's/^[[:space:]]*[Mm]erge [Aa]fter://' | grep -oE '([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)?#[0-9]+' | awk '!seen[$0]++') || return 0
+            for ref in $refs; do
+              r=${ref%#*} n=${ref##*#}; [ -n "$r" ] || r=$REPO
+              if ! st=$(gh api "repos/$r/issues/$n" --jq .state 2>"$ERR"); then echo "merge after $ref: can't read it ($(why_err))"; return; fi
+              [ "$st" = open ] && { echo "merge after $ref: still open"; return; }
+            done
+            return 0
+          }
           one() {
             local pr=$1 meta head body labels branch draft state same
             meta=$(gh api "repos/$REPO/pulls/$pr" --jq '[.state, (.draft|tostring), .head.sha, .head.ref, (.head.repo.full_name == .base.repo.full_name | tostring), ([.labels[].name] | join(","))] | join("\t")') || { echo "#$pr: unreadable"; return; }
@@ -80,6 +94,7 @@ jobs:
             [ "$state" = open ] || why="not open"
             [ -z "$why" ] && [ "$draft" = false ] || why=${why:-"a draft"}
             [ -z "$why" ] && [ "$same" = true ] || why=${why:-"from a fork"}
+            [ -n "$why" ] || why=$(merge_after "$body")
             [ -z "$why" ] && [[ ",$labels," == *",room:merge,"* ]] || why=${why:-"no room:merge label"}
             [ -z "$why" ] && grep -qiE '^[[:space:]]*Room:[[:space:]]*[a-g][[:space:]]*$' <<< "$body" || why=${why:-"no Room: line, so not a room PR"}
             [ -z "$why" ] && ! grep -qiE '^[[:space:]]*Team:' <<< "$body" || why=${why:-"a Team: line: an Alpha or Bravo PR, merged through Master Chief and the gates"}
