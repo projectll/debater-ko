@@ -8,8 +8,10 @@ name: room-merge
 #   2. its body has a `Room: <x>` line (x is a…g, team/config/rooms.json), which makes it a room's PR (src/ledger/rooms.ts roomOf);
 #   3. it is not an Alpha or Bravo PR: no `Team:` line, no Bravo label (claimed:/reviewing:/held:bravo, bravo-shift),
 #      and no claude/bravo- or bravo/ branch;
-#   4. its merge level isn't Lou's (no `merge:hq` or `merge:lou` label), and it touches no box script
-#      (team/addons/discussion/box/: SWAT Command merges those and posts the install paste);
+#   4. it carries no `merge:happy` label (or the old `merge:hq` or `merge:lou`: the lou level is retired into happy,
+#      core-jarvis#1286), it touches no box script (team/addons/discussion/box/: SWAT Command merges those and posts
+#      the install paste), and no hand-merge path (HAND_PATHS below: workflows, secrets, approvals, Happy's own files;
+#      Lou merges those by hand);
 #   5. the principal reviewer's latest verdict is PASS, without `security`, and on the head commit;
 #   6. CI on the head is green: at least one check run, every check run done as success, neutral or skipped (this
 #      workflow's own and would-auto-merge aside), and no failing or pending commit status;
@@ -69,6 +71,9 @@ jobs:
           # and the sweep goes on to the next; the run stays green. A read that fails never counts as a pass (files: not
           # known to be free of box scripts, so not merged).
           ERR=$(mktemp)
+          # hand-merge paths (`handMerge` in core-jarvis team/config/approvals.json; core-jarvis#1237, #1286): never merged
+          # here, whatever the label. The same list as core-jarvis's copy.
+          HAND_PATHS='^(\.github/workflows/|scripts/secret\.mjs$|src/secrets/|docs/secrets\.md$|team/config/\.secrets$|team/config/secrets\.json$|team/config/approvals\.json$|team/core/agents/happy/|team/core/teams/happy/|team/core/skills/happy/)'
           why_err() { head -c 200 "$ERR" | tr '\n' ' ' | sed 's/ *$//'; }
           verdict() {  # PR $1's latest trusted principal verdict: "<commit>\t<line 1>", or none
             gh api "repos/$REPO/pulls/$1/reviews?per_page=100" --paginate | jq -s -r --argjson who "$AUTHORS" '[.[][] | select((.body // "") | startswith("[principal-reviewer]: Reviewer verdict: "))
@@ -100,11 +105,12 @@ jobs:
             [ -z "$why" ] && ! grep -qiE '^[[:space:]]*Team:' <<< "$body" || why=${why:-"a Team: line: an Alpha or Bravo PR, merged through Master Chief and the gates"}
             [ -z "$why" ] && ! [[ ",$labels," =~ ,(claimed:bravo|reviewing:bravo|held:bravo|bravo-shift), ]] || why=${why:-"a Bravo label: merged through Master Chief and the gates"}
             [ -z "$why" ] && ! [[ "$branch" =~ ^(claude/bravo-|bravo/) ]] || why=${why:-"a Bravo branch: merged through Master Chief and the gates"}
-            [ -z "$why" ] && ! [[ ",$labels," =~ ,(merge:hq|merge:lou), ]] || why=${why:-"merge level hq or lou: Lou merges it"}
+            [ -z "$why" ] && ! [[ ",$labels," =~ ,(merge:hq|merge:lou|merge:happy), ]] || why=${why:-"merge level happy (or the old hq or lou): not a plain room merge"}
             if [ -z "$why" ]; then
               local files
               if ! files=$(gh api "repos/$REPO/pulls/$pr/files?per_page=100" --paginate --jq '.[].filename' 2>"$ERR"); then why="can't read its files ($(why_err))"
               elif grep -q '^team/addons/discussion/box/' <<< "$files"; then why="a box script: SWAT Command merges it and posts the install paste"
+              elif grep -qE "$HAND_PATHS" <<< "$files"; then why="a hand-merge path ($(grep -E "$HAND_PATHS" <<< "$files" | head -2 | tr '\n' ' ')): Lou merges it"
               fi
             fi
             if [ -z "$why" ]; then
