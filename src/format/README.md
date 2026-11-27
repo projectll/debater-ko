@@ -17,9 +17,20 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
 
 ## Records
 
+- **Debate config** (`config.ts`): `question`, `sides` (exactly two, each `{ id, name, position }`
+  with distinct ids), `opening_order`, `rebuttal_rounds` and `closing_order` (each order lists the
+  two side ids once). `validateDebateConfig(c)` returns one `{ path, message }` per problem, empty
+  when valid, e.g. `{ path: "sides", message: "expected exactly 2, got 1" }`. Unknown keys are
+  errors (`docs/DESIGN.md` §3.3).
 - **Turn** (`turn.ts`): `turn_id`, `seq`, `side`, `speaker`, `kind` (`opening`, `rebuttal` or
   `closing`) and `text`. `validateTurns(turns)` returns one error string per problem, naming the
   turn's 0-based index and the field or the sequence gap. Extra fields aren't an error, so later
   tickets can add theirs.
 
 `node --experimental-strip-types --test "tests/format/*.test.ts"` tests the records.
+
+## Defaults (`debate.default.json`)
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `rebuttal_rounds` | `3` | Rebuttal rounds in a debate, read as `DEFAULT_REBUTTAL_ROUNDS` (`config.ts`). |
