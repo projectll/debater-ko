@@ -17,6 +17,10 @@ boundary (`docs/DESIGN.md` §2.1) stays intact. It is not the optional quality e
 `node scripts/check-judge-deps.mjs` checks this and fails on any such import;
 `node --test "tests/judge/*.test.mjs"` tests the check.
 
+The viewer (`viewer/`) may import only `verdict.ts` and `reasons.ts` from here, never `index.ts`,
+a judge or the rubric (deb-075a). So those two files may import only each other, the format layer
+(not its runner) and `node:` builtins; `npm run check-deps` in `viewer/` fails otherwise.
+
 ## The verdict record
 
 `verdict.ts` (deb-014a) defines the `Verdict` record, `validateVerdict` and `writeVerdict`. A
