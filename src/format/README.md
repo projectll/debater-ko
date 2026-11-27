@@ -22,6 +22,12 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
   two side ids once). `validateDebateConfig(c)` returns one `{ path, message }` per problem, empty
   when valid, e.g. `{ path: "sides", message: "expected exactly 2, got 1" }`. Unknown keys are
   errors (`docs/DESIGN.md` §3.3).
+- **Config loader** (`load-config.ts`): `loadDebateConfig(path)` reads a config file, fills any key
+  it leaves out from `debate.default.json` (`docs/DESIGN.md` §3.2), and returns
+  `{ ok: true, config }` or `{ ok: false, error }` with the first error from
+  `validateDebateConfig`. A file that can't be read or isn't valid JSON gives `error.path` `""`
+  and a message naming the file; it never throws and has no side effects, so a bad config starts
+  nothing.
 - **Turn** (`turn.ts`): `turn_id`, `seq`, `side`, `speaker`, `kind` (`opening`, `rebuttal` or
   `closing`) and `text`. `validateTurns(turns)` returns one error string per problem, naming the
   turn's 0-based index and the field or the sequence gap. Extra fields aren't an error, so later
