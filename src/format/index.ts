@@ -12,3 +12,5 @@ export { TURN_KINDS, validateTurns } from "./turn.ts";
 export type { TurnKind, TurnRecord } from "./turn.ts";
 export { pointId, turnOfPoint, validatePoints } from "./point.ts";
 export type { Point } from "./point.ts";
+export { FORMAT_VERSION, appendTurn, buildHeader, parseTranscriptFile, writeHeader } from "./transcript.ts";
+export type { TranscriptHeader } from "./transcript.ts";

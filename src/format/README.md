@@ -37,6 +37,15 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
   transcript and resolves to one turn. `validatePoints(turns)` reports a repeated `point_id`, one
   that doesn't match its turn and position, and a missing or empty `claim`, naming the turn and
   point indexes; `turnOfPoint(turns, id)` returns the one turn holding the point, or `undefined`.
+- **Transcript header and stored form** (`transcript.ts`): one JSON Lines file per debate; line 1
+  is the header, each later line one turn record in sequence order. The header has exactly six
+  fields: `transcript_id`, `format_version` (`FORMAT_VERSION`, `"1.0"`), `question`, `sides`,
+  `config_snapshot` (a deep copy of the config taken at start, so later config edits never change
+  a recorded debate) and `started_at` (ISO 8601). `buildHeader(config, opts?)` builds it from a
+  valid config (it throws on an invalid one); `writeHeader(path, header)` creates the file and
+  throws if it exists; `appendTurn(path, turn)` appends exactly one line and never rewrites
+  earlier ones; `parseTranscriptFile(path)` returns `{ header, turns }`, skipping a last line with
+  no trailing newline (a write still in progress), so a growing file re-reads cleanly.
 
 `node --experimental-strip-types --test "tests/format/*.test.ts"` tests the records.
 
