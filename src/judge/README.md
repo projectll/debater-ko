@@ -38,3 +38,11 @@ that calls no model (the scripted judge, #22) runs with no budget. No model clie
 | Key (`judge.default.json`) | Default | Meaning |
 | --- | --- | --- |
 | `judge.budget_authorized` | `false` | `true` only once Lou has set a budget; lets a judge that calls a model run. Absent or anything but `true` means no budget. |
+
+## Verdict reasons
+
+`reasons.ts` (deb-023a) defines a reason entry, `{ side, dimension, text, turn_ids }`, where
+`dimension` is one of `answer`, `evidence`, `consistency` (the score keys of the verdict record), and
+`validateReasons(verdict, turns)`. Every reason must cite a non-empty list of `turn_id`s, each a turn
+of the judged transcript; it returns one error per problem, naming the reason's index (and, for an
+unknown turn, the id). `tests/judge/reasons.test.ts` tests it.

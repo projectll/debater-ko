@@ -9,3 +9,5 @@ export { DEFAULT_VERDICTS_DIR, VERDICT_FORMAT_VERSION, VERDICT_OUTCOMES, validat
 export type { SideScores, Verdict, VerdictOutcome } from "./verdict.ts";
 export { runJudge } from "./judge.ts";
 export type { Judge, JudgeConfig, RunJudgeResult } from "./judge.ts";
+export { REASON_DIMENSIONS, validateReasons } from "./reasons.ts";
+export type { ReasonDimension, VerdictReason } from "./reasons.ts";
