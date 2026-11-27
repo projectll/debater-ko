@@ -10,3 +10,5 @@ export { TURN_KINDS, validateTurns } from "./turn.ts";
 export type { TurnKind, TurnRecord } from "./turn.ts";
 export { pointId, turnOfPoint, validatePoints } from "./point.ts";
 export type { Point } from "./point.ts";
+export { runOrder } from "./run-order.ts";
+export type { Slot } from "./run-order.ts";
