@@ -16,3 +16,11 @@ boundary (`docs/DESIGN.md` §2.1) stays intact. It is not the optional quality e
 
 `node scripts/check-judge-deps.mjs` checks this and fails on any such import;
 `node --test "tests/judge/*.test.mjs"` tests the check.
+
+## The verdict record
+
+`verdict.ts` (deb-014a) defines the `Verdict` record, `validateVerdict` and `writeVerdict`. A
+verdict is its own file, `<verdictsDir>/<transcript_id>.verdict.json` (`verdictsDir` defaults to
+`./verdicts`; an option, not an environment variable, per `docs/DESIGN.md` §3.2), and the judge never
+appends to or changes the transcript. `node --experimental-strip-types --test "tests/judge/*.test.ts"`
+tests it.
