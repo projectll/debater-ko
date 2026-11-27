@@ -23,6 +23,10 @@ export interface TurnRecord {
   text: string;
   /** In order, possibly empty; `validatePoints` (`point.ts`) checks the points themselves. */
   points: Point[];
+  /** Required on rebuttal turns, absent on the others: the opposing point ids it answers (`answers.ts`, deb-019a). */
+  answers?: string[];
+  /** Marks a forfeited turn: empty `text` and `points` (#35 defines it; the name is fixed in deb-019a). */
+  forfeited?: true;
 }
 
 const NON_EMPTY_STRING_FIELDS = ["turn_id", "side", "speaker"] as const;
