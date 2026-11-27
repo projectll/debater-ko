@@ -7,3 +7,5 @@ export const JUDGE_MODULE = "judge";
 
 export { DEFAULT_VERDICTS_DIR, VERDICT_FORMAT_VERSION, VERDICT_OUTCOMES, validateVerdict, writeVerdict } from "./verdict.ts";
 export type { SideScores, Verdict, VerdictOutcome } from "./verdict.ts";
+export { REASON_DIMENSIONS, validateReasons } from "./reasons.ts";
+export type { ReasonDimension, VerdictReason } from "./reasons.ts";

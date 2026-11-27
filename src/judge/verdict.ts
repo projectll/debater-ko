@@ -1,7 +1,8 @@
 // The judge's verdict record (deb-014a): written by the judge as its own file, linked to its transcript
 // by transcript_id, so replay stays transcript-only and model-free. The judge never appends to or
 // changes the transcript: writeVerdict only writes <verdictsDir>/<transcript_id>.verdict.json.
-// Reason entries are checked by #23; here `reasons` only has to be an array.
+// Reason entries are checked against the transcript by `validateReasons` (`reasons.ts`, deb-023a);
+// here `reasons` only has to be an array.
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

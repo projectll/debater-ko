@@ -24,3 +24,11 @@ verdict is its own file, `<verdictsDir>/<transcript_id>.verdict.json` (`verdicts
 `./verdicts`; an option, not an environment variable, per `docs/DESIGN.md` §3.2), and the judge never
 appends to or changes the transcript. `node --experimental-strip-types --test "tests/judge/*.test.ts"`
 tests it.
+
+## Verdict reasons
+
+`reasons.ts` (deb-023a) defines a reason entry, `{ side, dimension, text, turn_ids }`, where
+`dimension` is one of `answer`, `evidence`, `consistency` (the score keys of the verdict record), and
+`validateReasons(verdict, turns)`. Every reason must cite a non-empty list of `turn_id`s, each a turn
+of the judged transcript; it returns one error per problem, naming the reason's index (and, for an
+unknown turn, the id). `tests/judge/reasons.test.ts` tests it.
