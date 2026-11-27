@@ -4,12 +4,12 @@ import assert from "node:assert/strict";
 import { TURN_KINDS, validateTurns } from "../../src/format/index.ts";
 import type { TurnRecord } from "../../src/format/index.ts";
 
-/** A valid three-turn sample: seq 1, 2, 3, all six base fields. */
+/** A valid three-turn sample: seq 1, 2, 3, all six base fields and an empty points list (deb-018a). */
 function sample(): TurnRecord[] {
   return [
-    { turn_id: "t1", seq: 1, side: "pro", speaker: "Pro", kind: "opening", text: "We should." },
-    { turn_id: "t2", seq: 2, side: "con", speaker: "Con", kind: "rebuttal", text: "We should not." },
-    { turn_id: "t3", seq: 3, side: "pro", speaker: "Pro", kind: "closing", text: "In closing." },
+    { turn_id: "t1", seq: 1, side: "pro", speaker: "Pro", kind: "opening", text: "We should.", points: [] },
+    { turn_id: "t2", seq: 2, side: "con", speaker: "Con", kind: "rebuttal", text: "We should not.", points: [] },
+    { turn_id: "t3", seq: 3, side: "pro", speaker: "Pro", kind: "closing", text: "In closing.", points: [] },
   ];
 }
 
@@ -49,7 +49,6 @@ test("6. an empty text is valid (a forfeited turn)", () => {
 
 test("7. unknown extra fields are not an error", () => {
   const turns: Record<string, unknown>[] = sample();
-  turns[1].points = [];
   turns[1].answers = ["t1"];
   turns[2].forfeited = false;
   assert.deepEqual(validateTurns(turns), []);
@@ -65,7 +64,7 @@ test("9. a transcript must start at seq 1, and one gap is reported once", () => 
   const turns = sample().map((t) => ({ ...t, seq: t.seq + 1 }));
   assert.deepEqual(validateTurns(turns), ["turn 0: seq 2, expected 1"]);
   const gap = sample();
-  gap.push({ turn_id: "t4", seq: 4, side: "con", speaker: "Con", kind: "closing", text: "" });
+  gap.push({ turn_id: "t4", seq: 4, side: "con", speaker: "Con", kind: "closing", text: "", points: [] });
   gap[2].seq = 5;
   gap[3].seq = 6;
   assert.deepEqual(validateTurns(gap), ["turn 2: seq 5, expected 3"]);
@@ -95,4 +94,16 @@ test("12. a non-object turn and a non-list input are errors, not crashes", () =>
   assert.deepEqual(validateTurns([null, "t", sample()[2]]), ["turn 0: not an object", "turn 1: not an object"]);
   assert.deepEqual(validateTurns("nope" as unknown as unknown[]), ["turns: not a list"]);
   assert.deepEqual(validateTurns([]), []);
+});
+
+test("13. points is required on every turn and must be a list (deb-018a)", () => {
+  const turns: Record<string, unknown>[] = sample();
+  delete turns[0].points;
+  turns[1].points = "t2.p1";
+  turns[2].points = { point_id: "t3.p1", claim: "x" };
+  assert.deepEqual(validateTurns(turns), [
+    "turn 0: missing points",
+    "turn 1: points must be a list",
+    "turn 2: points must be a list",
+  ]);
 });

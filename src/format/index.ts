@@ -8,3 +8,5 @@ export { DEFAULT_REBUTTAL_ROUNDS, validateDebateConfig } from "./config.ts";
 export type { ConfigError, DebateConfig, DebateSide } from "./config.ts";
 export { TURN_KINDS, validateTurns } from "./turn.ts";
 export type { TurnKind, TurnRecord } from "./turn.ts";
+export { pointId, turnOfPoint, validatePoints } from "./point.ts";
+export type { Point } from "./point.ts";

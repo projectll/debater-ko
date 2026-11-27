@@ -1,6 +1,9 @@
 // The transcript turn record (deb-012a): the six base fields every later format, viewer and judge
-// ticket uses. Later tickets add their own fields to this same record (points #18, answers #19,
-// the forfeited marker #35), so unknown extra fields are never an error here.
+// ticket uses, plus the points list (deb-018a, `point.ts`). Later tickets add their own fields to
+// this same record (answers #19, the forfeited marker #35), so unknown extra fields are never an
+// error here.
+
+import type { Point } from "./point.ts";
 
 export type TurnKind = "opening" | "rebuttal" | "closing";
 
@@ -18,6 +21,8 @@ export interface TurnRecord {
   kind: TurnKind;
   /** May be empty (a forfeited turn has empty text). */
   text: string;
+  /** In order, possibly empty; `validatePoints` (`point.ts`) checks the points themselves. */
+  points: Point[];
 }
 
 const NON_EMPTY_STRING_FIELDS = ["turn_id", "side", "speaker"] as const;
@@ -67,6 +72,9 @@ export function validateTurns(turns: unknown[]): string[] {
 
     if (!("text" in record)) errors.push(`${at}: missing text`);
     else if (typeof record.text !== "string") errors.push(`${at}: text must be a string`);
+
+    if (!("points" in record)) errors.push(`${at}: missing points`);
+    else if (!Array.isArray(record.points)) errors.push(`${at}: points must be a list`);
   });
   return errors;
 }
