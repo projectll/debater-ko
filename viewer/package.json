@@ -7,7 +7,8 @@
     "dev": "next dev --hostname localhost",
     "build": "next build",
     "start": "next start --hostname localhost",
-    "check-deps": "node scripts/check-deps.mjs"
+    "check-deps": "node scripts/check-deps.mjs",
+    "test": "node --test \"tests/**/*.test.*\""
   },
   "dependencies": {
     "next": "^16.4.6",
