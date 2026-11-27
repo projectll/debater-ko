@@ -10,3 +10,4 @@ export { TURN_KINDS, validateTurns } from "./turn.ts";
 export type { TurnKind, TurnRecord } from "./turn.ts";
 export { pointId, turnOfPoint, validatePoints } from "./point.ts";
 export type { Point } from "./point.ts";
+export { qualifyingTurn, validateAnswers } from "./answers.ts";

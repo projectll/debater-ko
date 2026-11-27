@@ -31,6 +31,12 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
   transcript and resolves to one turn. `validatePoints(turns)` reports a repeated `point_id`, one
   that doesn't match its turn and position, and a missing or empty `claim`, naming the turn and
   point indexes; `turnOfPoint(turns, id)` returns the one turn holding the point, or `undefined`.
+- **Answers** (`answers.ts`): a rebuttal turn's `answers` lists the point ids it answers; opening
+  and closing turns carry no `answers` key, and neither does a forfeited turn (`forfeited: true`,
+  empty `text` and `points`; #35). Each id must be a point of the qualifying turn
+  (`qualifyingTurn(turns, turn)`): the other side's latest earlier turn (highest `seq`) that
+  carries points, skipping forfeits. `validateAnswers(turns)` checks turns in `seq` order and
+  returns one error per problem, naming the turn's `seq` and the offending id.
 
 `node --experimental-strip-types --test "tests/format/*.test.ts"` tests the records.
 
