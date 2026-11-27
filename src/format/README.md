@@ -31,6 +31,11 @@ engine's never-judges, never-calls-a-model boundary (`docs/DESIGN.md` §2.1) sta
   transcript and resolves to one turn. `validatePoints(turns)` reports a repeated `point_id`, one
   that doesn't match its turn and position, and a missing or empty `claim`, naming the turn and
   point indexes; `turnOfPoint(turns, id)` returns the one turn holding the point, or `undefined`.
+- **Run order** (`run-order.ts`): `runOrder(config)` returns the debate's slots, each
+  `{ index, kind, side, round? }`, in order. It starts with one `opening` slot per side in
+  `opening_order` (index 0 and 1), so the first side presents its case first and no rebuttal or
+  closing slot comes before both openings. The rebuttal (deb-020a) and closing (deb-024a) slots
+  follow them. An invalid config throws a `RangeError` naming its errors.
 
 `node --experimental-strip-types --test "tests/format/*.test.ts"` tests the records.
 
